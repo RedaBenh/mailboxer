@@ -43,6 +43,8 @@ class Mailbox
         conv = Conversation.trash(@messageable)
       when  'not_trash'
         conv = Conversation.not_trash(@messageable)
+      when  'deleted'
+        conv = Conversation.deleted(@messageable)
       end
     end
 
@@ -77,6 +79,12 @@ class Mailbox
     self.conversations(options)
   end
 
+  # Returns the deleted conversations that are still in the database ( i.e. not orphaned)
+  def deleted(options={})
+    options = options.merge(:mailbox_type => 'deleted')
+    self.conversations(options)
+  end
+
   #Returns all the receipts of messageable, from Messages and Notifications
   def receipts(options = {})
     Receipt.where(options).recipient(@messageable)
@@ -96,6 +104,10 @@ class Mailbox
   #Returns true if messageable has at least one trashed message of the conversation
   def is_trashed?(conversation)
     conversation.is_trashed?(@messageable)
+  end
+
+  def is_deleted?(conversation)
+    conversation.is_deleted?(@messageable)
   end
 
   #Returns true if messageable has trashed all the messages of the conversation

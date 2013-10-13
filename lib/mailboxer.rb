@@ -19,7 +19,8 @@ module Mailboxer
   @@name_method = :name
   mattr_accessor :notification_mailer
   mattr_accessor :message_mailer
-
+  @@remove_orphaned_conversations = true
+  mattr_accessor :remove_orphaned_conversations
   class << self
     def setup
       yield self

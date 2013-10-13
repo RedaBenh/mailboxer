@@ -30,6 +30,9 @@ class Conversation < ActiveRecord::Base
     participant(participant).merge(Receipt.not_trash)
   }
 
+  scope :deleted, lambda {|participant|
+    participant(participant).merge(Receipt.deleted)
+  }
   #Mark the conversation as read for one of the participants
   def mark_as_read(participant)
     return if participant.nil?
@@ -58,7 +61,7 @@ class Conversation < ActiveRecord::Base
   def mark_as_deleted(participant)
     return if participant.nil?
     deleted_receipts = self.receipts_for(participant).mark_as_deleted
-    if is_orphaned?
+    if is_orphaned? and Mailboxer.remove_orphaned_conversations
       self.destroy
     else
       deleted_receipts
